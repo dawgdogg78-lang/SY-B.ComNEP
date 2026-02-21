@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.Y. B.Com Command Center</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Marked.js for safe Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <style>
+        /* Custom styles for rendered markdown tables and text */
+        .markdown-body table { width: 100%; border-collapse: collapse; margin-top: 1rem; margin-bottom: 1rem; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.875rem; }
+        .markdown-body th { background-color: #f8fafc; padding: 0.75rem 1rem; text-align: left; font-weight: 600; color: #64748b; text-transform: uppercase; border: 1px solid #e2e8f0; }
+        .markdown-body td { padding: 0.5rem 1rem; border: 1px solid #e2e8f0; color: #334155; white-space: pre-wrap; }
+        .markdown-body tr:nth-child(even) { background-color: #f8fafc; }
+        .markdown-body h2 { font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .markdown-body h3 { font-size: 1.125rem; font-weight: 700; color: #1e293b; margin-top: 1.25rem; margin-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.25rem; }
+        .markdown-body p { margin-bottom: 0.75rem; color: #334155; line-height: 1.6; }
+        .markdown-body ul { margin-left: 1.5rem; list-style-type: disc; margin-bottom: 1rem; color: #334155; }
+        .markdown-body ol { margin-left: 1.5rem; list-style-type: decimal; margin-bottom: 1rem; color: #334155; }
+        .markdown-body strong { color: #0f172a; font-weight: 600; }
+        
+        .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-500 p-2 rounded-lg">
+                    <i class="ph ph-graduation-cap text-2xl text-slate-900"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">S.Y. B.Com Command Center</h1>
+                    <p class="text-xs text-slate-400">Mumbai University Academic Assistant</p>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center space-x-2 text-sm bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span>Professor AI Online</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl w-full mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+        
+        <!-- Left Panel: Controls -->
+        <div class="lg:col-span-4 space-y-6">
+            
+            <!-- Subject Selector -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                <label class="flex items-center space-x-2 text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">
+                    <i class="ph ph-books text-lg"></i>
+                    <span>Select Subject</span>
+                </label>
+                <div class="relative">
+                    <select id="subjectSelect" class="w-full appearance-none bg-slate-50 border border-slate-300 hover:border-amber-500 text-slate-900 text-sm rounded-lg p-3 pr-10 focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all shadow-sm">
+                        <!-- Options populated via JS -->
+                    </select>
+                    <i class="ph ph-caret-down absolute right-3 top-3.5 text-slate-400 pointer-events-none text-lg"></i>
+                </div>
+                
+                <div class="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-100">
+                    <div class="flex items-start space-x-3">
+                        <i id="subjectIcon" class="ph ph-trend-up text-amber-600 mt-0.5 text-xl flex-shrink-0"></i>
+                        <div>
+                            <h3 id="subjectType" class="text-sm font-bold text-amber-900">Focus</h3>
+                            <p id="subjectPrompt" class="text-xs text-amber-800 mt-1 leading-relaxed opacity-90"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                <label class="flex items-center space-x-2 text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">
+                    <i class="ph ph-sliders text-lg"></i>
+                    <span>Exam Parameters</span>
+                </label>
+                
+                <div id="examModeToggle" class="cursor-pointer flex items-center justify-between p-3 rounded-lg border transition-all bg-slate-50 border-slate-200">
+                    <div class="flex items-center space-x-3">
+                        <div id="toggleTrack" class="w-10 h-6 rounded-full flex items-center p-1 duration-300 ease-in-out bg-slate-300">
+                            <div id="toggleKnob" class="bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out"></div>
+                        </div>
+                        <span id="toggleText" class="text-sm font-medium text-slate-600">Exam Mode</span>
+                    </div>
+                    <span id="strictBadge" class="hidden text-xs bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded font-bold">STRICT</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-2 px-1">
+                    Enables strict 5/10 mark answer structure required for Mumbai University papers.
+                </p>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="bg-slate-800 text-slate-300 rounded-xl p-5 text-sm hidden lg:block">
+                <h4 class="font-bold text-white mb-2 flex items-center"><i class="ph ph-lightbulb text-lg mr-2 text-amber-400"></i> Quick Tips</h4>
+                <ul class="space-y-2 list-disc pl-4 text-xs opacity-80">
+                    <li>Upload images of Balance Sheets or sums for direct solving.</li>
+                    <li>Upload text files (.txt) containing long case studies.</li>
+                    <li>Ask for "Differences between X and Y" for tabular formats.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Panel: Interaction -->
+        <div class="lg:col-span-8 flex flex-col h-full space-y-6">
+            
+            <!-- Input Area with Attachments -->
+            <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-1 flex flex-col">
+                
+                <!-- Attachment Preview Area -->
+                <div id="attachmentArea" class="hidden px-4 pt-3 flex flex-wrap gap-2">
+                    <!-- Attachments injected here -->
+                </div>
+
+                <textarea
+                    id="queryInput"
+                    placeholder="Ask a question or describe a problem..."
+                    class="w-full min-h-[140px] p-4 text-slate-700 bg-transparent resize-none focus:outline-none text-base"
+                ></textarea>
+                
+                <div class="px-4 pb-4 flex justify-between items-center border-t border-slate-100 pt-3">
+                    
+                    <!-- File & Image Upload Actions -->
+                    <div class="flex space-x-2">
+                        <input type="file" id="fileUpload" class="hidden" accept="image/*,.txt" multiple>
+                        <button id="uploadBtn" class="p-2 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors flex items-center space-x-1" title="Upload Image or Text File">
+                            <i class="ph ph-paperclip text-xl"></i>
+                            <span class="text-sm font-medium hidden sm:inline">Attach</span>
+                        </button>
+                        <button id="imageBtn" class="p-2 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors flex items-center space-x-1" title="Upload Image">
+                            <i class="ph ph-image text-xl"></i>
+                        </button>
+                    </div>
+
+                    <button
+                        id="generateBtn"
+                        class="flex items-center space-x-2 px-6 py-2.5 rounded-lg font-semibold text-white transition-all transform active:scale-95 shadow-md bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:bg-slate-300 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+                    >
+                        <i id="btnIcon" class="ph ph-arrow-right text-lg"></i>
+                        <span id="btnText">Generate Answer</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Display -->
+            <div id="errorDisplay" class="hidden bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 flex items-start space-x-3">
+                <i class="ph ph-warning-circle text-xl mt-0.5"></i>
+                <div>
+                    <h4 class="font-bold">Error</h4>
+                    <p id="errorMessage" class="text-sm"></p>
+                </div>
+            </div>
+
+            <!-- Response Area -->
+            <div id="responseContainer" class="hidden bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden animate-fade-in-up">
+                <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700 flex items-center">
+                        <i class="ph ph-file-text text-xl mr-2 text-amber-500"></i>
+                        Professor's Solution
+                    </h3>
+                    <div class="flex space-x-2">
+                        <button onclick="handleQuickAction('simplify')" class="text-xs bg-white border border-slate-300 px-2 py-1 rounded hover:bg-slate-50 text-slate-600 transition-colors">Simplify</button>
+                        <button onclick="handleQuickAction('practice')" class="text-xs bg-white border border-slate-300 px-2 py-1 rounded hover:bg-slate-50 text-slate-600 transition-colors">Practice Qs</button>
+                    </div>
+                </div>
+                
+                <div class="p-6 md:p-8 overflow-x-auto">
+                    <!-- Markdown Output -->
+                    <div id="markdownOutput" class="markdown-body"></div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="bg-indigo-50 px-6 py-4 border-t border-indigo-100 flex flex-wrap gap-4 items-center justify-between">
+                    <div class="flex items-center space-x-2 text-indigo-800 text-sm font-medium">
+                        <i class="ph ph-medal text-lg"></i>
+                        <span>Exam Tip & Logic included</span>
+                    </div>
+                    <button 
+                        onclick="handleQuickAction('tip')"
+                        class="text-xs text-indigo-600 underline hover:text-indigo-800 font-medium"
+                    >
+                        Need more exam strategy?
+                    </button>
+                </div>
+            </div>
+
+            <!-- Empty State / Welcome -->
+            <div id="emptyState" class="flex-1 flex flex-col items-center justify-center text-slate-400 space-y-4 py-12 border-2 border-dashed border-slate-200 rounded-xl">
+                <div class="bg-slate-100 p-4 rounded-full">
+                    <i class="ph ph-book-open text-5xl text-slate-300"></i>
+                </div>
+                <div class="text-center max-w-sm">
+                    <h3 class="text-lg font-semibold text-slate-600">Ready to Study</h3>
+                    <p class="text-sm mt-1">Select your subject, upload an image of a problem, or type your question above.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // --- Configuration & Data ---
+        const SUBJECTS = [
+            { id: 1, title: "Fundamental of Business and Financial Analysis-III", icon: "ph-chart-line-up", type: "Analysis", prompt: "Focus on financial ratio analysis, business environment, and analytical techniques. Include working notes for all calculations. Present analysis in tabular format where appropriate." },
+            { id: 2, title: "Macro Economics Analysis (Major-II)", icon: "ph-chart-bar", type: "Economics", prompt: "Explain IS-LM model, AD-AS framework clearly. Connect theory to current Indian economic scenarios." },
+            { id: 3, title: "Accountancy and Financial Management-IV", icon: "ph-calculator", type: "Accounting", prompt: "Provide journal entries, ledger accounts, and financial statements in proper Markdown table format. Show all working notes clearly. Highlight applicable accounting standards." },
+            { id: 4, title: "Accounting & Auditing-II / Mgmt Accounting", icon: "ph-file-search", type: "Accounting", prompt: "For Auditing: Focus on verification, vouching, internal control. For Mgmt Accounting: Budgets, standard costing, marginal costing with formulas. Use standard formats for cost sheets." },
+            { id: 5, title: "Vocational Skills in Accounting-IV", icon: "ph-briefcase", type: "Vocational", prompt: "Focus on practical, hands-on accounting procedures, Tally/ERP concepts, GST practical applications, and E-filing steps." },
+            { id: 6, title: "Commerce IV [Management Production]", icon: "ph-factory", type: "Commerce", prompt: "Focus on Production planning, capital budgeting, working capital management. Use Case study approach. Ensure financial management numericals have proper formula application." },
+            { id: 7, title: "Microbes and Environment (O.E-I)", icon: "ph-leaf", type: "Science", prompt: "Explain Basic microbiology for commerce students, Environmental accounting, and sustainability concepts." },
+            { id: 8, title: "AEC-Business Communication Skill-II", icon: "ph-chat-circle-text", type: "Soft Skills", prompt: "Focus on Letter formats, report writing, presentation skills, Email etiquette, and business correspondence." },
+            { id: 9, title: "CU-Integrated Theatre Production", icon: "ph-mask-happy", type: "Cultural", prompt: "Focus on Management aspects of event production, Budgeting for cultural events, team coordination, and Project management applied to theatre." }
+        ];
+
+        // --- State Variables ---
+        let selectedSubject = SUBJECTS[0];
+        let examMode = false;
+        let isLoading = false;
+        let attachedFiles = []; 
+
+        // --- DOM Elements ---
+        const subjectSelect = document.getElementById('subjectSelect');
+        const subjectIcon = document.getElementById('subjectIcon');
+        const subjectType = document.getElementById('subjectType');
+        const subjectPrompt = document.getElementById('subjectPrompt');
+        
+        const examModeToggle = document.getElementById('examModeToggle');
+        const toggleTrack = document.getElementById('toggleTrack');
+        const toggleKnob = document.getElementById('toggleKnob');
+        const toggleText = document.getElementById('toggleText');
+        const strictBadge = document.getElementById('strictBadge');
+        
+        const queryInput = document.getElementById('queryInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const btnIcon = document.getElementById('btnIcon');
+        const btnText = document.getElementById('btnText');
+        
+        const fileUpload = document.getElementById('fileUpload');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const imageBtn = document.getElementById('imageBtn');
+        const attachmentArea = document.getElementById('attachmentArea');
+        
+        const errorDisplay = document.getElementById('errorDisplay');
+        const errorMessage = document.getElementById('errorMessage');
+        const responseContainer = document.getElementById('responseContainer');
+        const markdownOutput = document.getElementById('markdownOutput');
+        const emptyState = document.getElementById('emptyState');
+
+        // --- Initialization ---
+        function init() {
+            SUBJECTS.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub.id;
+                option.textContent = sub.title;
+                subjectSelect.appendChild(option);
+            });
+            updateSubjectUI();
+
+            marked.use({
+                breaks: true,
+                gfm: true
+            });
+        }
+
+        // --- Event Listeners ---
+        subjectSelect.addEventListener('change', (e) => {
+            selectedSubject = SUBJECTS.find(s => s.id == e.target.value);
+            updateSubjectUI();
+        });
+
+        examModeToggle.addEventListener('click', () => {
+            examMode = !examMode;
+            updateToggleUI();
+        });
+
+        queryInput.addEventListener('input', validateInput);
+
+        uploadBtn.addEventListener('click', () => fileUpload.click());
+        imageBtn.addEventListener('click', () => {
+            fileUpload.accept = "image/*";
+            fileUpload.click();
+            setTimeout(() => fileUpload.accept = "image/*,.txt", 100); 
+        });
+
+        fileUpload.addEventListener('change', handleFileSelection);
+
+        generateBtn.addEventListener('click', () => generateContent());
+
+        // --- UI Updates ---
+        function updateSubjectUI() {
+            subjectIcon.className = `ph ${selectedSubject.icon} text-amber-600 mt-0.5 text-xl flex-shrink-0`;
+            subjectType.textContent = selectedSubject.type + " Focus";
+            subjectPrompt.textContent = selectedSubject.prompt;
+        }
+
+        function updateToggleUI() {
+            if (examMode) {
+                examModeToggle.classList.replace('bg-slate-50', 'bg-indigo-50');
+                examModeToggle.classList.replace('border-slate-200', 'border-indigo-200');
+                toggleTrack.classList.replace('bg-slate-300', 'bg-indigo-600');
+                toggleKnob.classList.add('translate-x-4');
+                toggleText.classList.replace('text-slate-600', 'text-indigo-900');
+                strictBadge.classList.remove('hidden');
+            } else {
+                examModeToggle.classList.replace('bg-indigo-50', 'bg-slate-50');
+                examModeToggle.classList.replace('border-indigo-200', 'border-slate-200');
+                toggleTrack.classList.replace('bg-indigo-600', 'bg-slate-300');
+                toggleKnob.classList.remove('translate-x-4');
+                toggleText.classList.replace('text-indigo-900', 'text-slate-600');
+                strictBadge.classList.add('hidden');
+            }
+        }
+
+        function validateInput() {
+            const hasText = queryInput.value.trim().length > 0;
+            const hasFiles = attachedFiles.length > 0;
+            generateBtn.disabled = (!hasText && !hasFiles) || isLoading;
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            queryInput.disabled = loading;
+            generateBtn.disabled = loading || (!queryInput.value.trim() && attachedFiles.length === 0);
+            
+            i
